@@ -1,0 +1,69 @@
+# all code can also be found here: https://www.kaggle.com/code/tleonhardt/csc-428-spambase
+
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict
+from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
+
+df = pd.read_csv('/kaggle/input/spambase-1/Spambase.csv')
+
+df.head()
+
+df.shape
+
+target_column = 'class'
+y = df[target_column]
+
+feature_columns = df.iloc[:, :-1].columns.tolist()
+X = df[feature_columns]
+
+print(y)
+print("\n\n")
+print (X)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+X_train.shape
+X_test.shape
+y_train.shape
+y_test.shape
+
+### Naive Bayes ###
+
+nb_clf = GaussianNB()
+cv_scores = cross_val_score(nb_clf, X_train, y_train, cv=6, scoring='accuracy')
+
+nb_cv_predictions = cross_val_predict(nb_clf, X_test, y_test, cv=6)
+
+nb_accuracy = accuracy_score(y_test, nb_cv_predictions)
+nb_precision = precision_score(y_test, nb_cv_predictions, average='macro')
+nb_recall = recall_score(y_test, nb_cv_predictions, average = 'macro')
+nb_f1 = f1_score(y_test, nb_cv_predictions)
+
+print("Naive Bayes Classifier Metrics: ")
+print("Accuracy: ", nb_accuracy)
+print("Precision: ", nb_precision)
+print("Recall: ", nb_recall)
+print("F1 score:", nb_f1)
+
+### C45 - Decision Tree ###
+
+c45_clf = DecisionTreeClassifier()
+c45_cv_scores = cross_val_score(c45_clf, X_train, y_train, cv=6, scoring='accuracy')
+
+c45_cv_pred = cross_val_predict(c45_clf, X_test, y_test, cv=6)
+
+c45_accuracy = accuracy_score(y_test, c45_cv_pred)
+c45_precision = precision_score(y_test, c45_cv_pred, average='macro')
+c45_recall = recall_score(y_test, c45_cv_pred, average = 'macro')
+c45_f1 = f1_score(y_test, c45_cv_pred)
+
+print("Decision Tree Metrics ")
+print("Accuracy: ", c45_accuracy)
+print("Precision: ", c45_precision)
+print("Recall: ", c45_recall)
+print("F1 score:", c45_f1)
